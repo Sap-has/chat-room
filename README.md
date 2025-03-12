@@ -37,8 +37,8 @@ Make sure you have the following installed:
 
 ### 1. Clone the Repository
 ```sh
-git clone https://github.com/your-repo/simple-chat-app.git
-cd simple-chat-app
+git clone https://github.com/Sap-has/chat-room.git
+cd chat-room
 ```
 
 ### 2. Build and Run the Application
