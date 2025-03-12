@@ -11,13 +11,15 @@ This is a real-time chat application built using **Java**, **Spring Boot**, and 
 - User-friendly interface
 - Built using **Spring Boot** and **STOMP** over WebSockets
 
-## Feautes to Add
+## Next Steps
 - Make room code persist by adding the room code generator in the backend instead of front end (currenlty uses front end)
-- Use MySQL to save chats
+- Implement message persistence in a database (MySQL)
 - Ability to create users
+- Implement authentication and user management
+
 - Ability to friend users
 - Can invite friends to chats
-
+- Improve UI design
 
 ## Technologies Used
 - Java
@@ -37,8 +39,8 @@ Make sure you have the following installed:
 
 ### 1. Clone the Repository
 ```sh
-git clone https://github.com/your-repo/simple-chat-app.git
-cd simple-chat-app
+git clone https://github.com/Sap-has/chat-room.git
+cd chat-room
 ```
 
 ### 2. Build and Run the Application
@@ -70,12 +72,6 @@ http://localhost:8080
 - **/app/chat.sendMessage/{roomCode}** → Send chat messages to a specific chatroom
 - **/app/chat.addUser/{roomCode}** → Notify when a user joins a specific chatroom
 - **/topic/{roomCode}** → Receives broadcasted messages for a specific chatroom
-
-## Next Steps
-- Implement message persistence in a database
-- Add private messaging
-- Improve UI design
-- Implement authentication and user management
 
 ## License
 This project is open-source and available under the [MIT License](LICENSE).
