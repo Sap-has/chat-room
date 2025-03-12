@@ -59,6 +59,9 @@ Open your web browser and go to:
 http://localhost:8080
 ```
 
+Or use this link to see web application live
+https://chatty-buddies.onrender.com
+
 ## How It Works
 1. The user is prompted to either **Host** or **Join** a chatroom.
    - If **Hosting**, a random 5-character chatroom code is generated.
