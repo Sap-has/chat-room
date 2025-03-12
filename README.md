@@ -53,6 +53,9 @@ If using **Gradle**, run:
 gradle bootRun
 ```
 
+Or use this link to see web application live
+https://chatty-buddies.onrender.com
+
 ### 3. Access the Chat Interface
 Open your web browser and go to:
 ```
