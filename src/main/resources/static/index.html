@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Simple Chat Application</title>
-    <!-- Include SockJS and STOMP over WebSocket libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
 <body>
     <h2>Chat Room</h2>
-    <div>
+
+    <div id="room-selection">
         <input type="text" id="name" placeholder="Your name" />
-        <button onclick="connect()">Join Chat</button>
+        <button onclick="hostRoom()">Host a Chatroom</button>
+        <br/><br/>
+        <input type="text" id="roomCode" placeholder="Enter Room Code" />
+        <button onclick="joinRoom()">Join Chatroom</button>
     </div>
-    <br/>
+
     <div id="chat" style="display:none;">
+        <p>Room Code: <span id="displayRoomCode"></span></p>
         <div id="conversation" style="border:1px solid #ccc; width:400px; height:300px; overflow:auto; padding:5px;"></div>
         <br/>
         <input type="text" id="message" placeholder="Type a message..." />
@@ -23,47 +27,69 @@
 
     <script>
         var stompClient = null;
+        var roomCode = null;
 
-        // Connects to the WebSocket endpoint.
-        function connect() {
+        function hostRoom() {
+            roomCode = generateRandomCode();
+            document.getElementById('displayRoomCode').innerText = roomCode;
+            startChat();
+        }
+
+        function joinRoom() {
+            roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+            if (!roomCode) {
+                alert("Please enter a valid room code.");
+                return;
+            }
+            document.getElementById('displayRoomCode').innerText = roomCode;
+            startChat();
+        }
+
+        function startChat() {
+            document.getElementById("room-selection").style.display = "none";
+            document.getElementById("chat").style.display = "block";
+
             var socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
-                console.log('Connected: ' + frame);
-                document.getElementById("chat").style.display = "block";
-
-                // Subscribe to the public topic.
-                stompClient.subscribe('/topic/public', function (messageOutput) {
+                stompClient.subscribe('/topic/' + roomCode, function (messageOutput) {
                     showMessage(JSON.parse(messageOutput.body));
                 });
 
-                // Send a join message.
-                stompClient.send("/app/chat.addUser", {},
-                    JSON.stringify({'sender': document.getElementById('name').value, 'type': 'JOIN'})
+                stompClient.send("/app/chat.addUser/" + roomCode, {}, 
+                    JSON.stringify({'sender': document.getElementById('name').value, 'type': 'JOIN', 'roomCode': roomCode})
                 );
             });
         }
 
-        // Sends a chat message to the backend.
         function sendMessage() {
             var messageContent = document.getElementById('message').value;
-            if(messageContent && stompClient) {
+            if (messageContent && stompClient) {
                 var chatMessage = {
                     sender: document.getElementById('name').value,
                     content: messageContent,
-                    type: 'CHAT'
+                    type: 'CHAT',
+                    roomCode: roomCode
                 };
-                stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+                stompClient.send("/app/chat.sendMessage/" + roomCode, {}, JSON.stringify(chatMessage));
                 document.getElementById('message').value = '';
             }
         }
 
-        // Appends messages to the conversation div.
         function showMessage(message) {
             var conversation = document.getElementById('conversation');
             var messageElement = document.createElement('p');
             messageElement.textContent = message.sender + ": " + message.content;
             conversation.appendChild(messageElement);
+        }
+
+        function generateRandomCode() {
+            var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            var code = '';
+            for (var i = 0; i < 5; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
         }
     </script>
 </body>

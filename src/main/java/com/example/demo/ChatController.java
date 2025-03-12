@@ -8,15 +8,15 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 
     // Method to broadcast a chat message to all subscribers.
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
+    @MessageMapping("/chat.sendMessage/{roomCode}")
+    @SendTo("/topic/{roomCode}")
     public ChatMessage sendMessage(ChatMessage chatMessage) {
         return chatMessage;
     }
 
     // Method to handle new user joining.
-    @MessageMapping("/chat.addUser")
-    @SendTo("/topic/public")
+    @MessageMapping("/chat.addUser/{roomCode}")
+    @SendTo("/topic/{roomCode}")
     public ChatMessage addUser(ChatMessage chatMessage) {
         return chatMessage;
     }

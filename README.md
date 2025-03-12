@@ -1,13 +1,23 @@
 # Simple Chat Application
 
 ## Overview
-This is a real-time chat application built using **Java**, **Spring Boot**, and **WebSockets**. The application allows multiple users to join a public chat room and communicate in real time.
+This is a real-time chat application built using **Java**, **Spring Boot**, and **WebSockets**. The application allows multiple users to join a chatroom and communicate in real time.
 
 ## Features
 - Real-time messaging with WebSockets
-- Supports multiple users in a public chat room
+- Supports multiple users in different chatrooms
+- Ability to **host** a chatroom with a randomly generated 5-character code
+- Ability to **join** a chatroom using a code
 - User-friendly interface
 - Built using **Spring Boot** and **STOMP** over WebSockets
+
+## Feautes to Add
+- Make room code persist by adding the room code generator in the backend instead of front end (currenlty uses front end)
+- Use MySQL to save chats
+- Ability to create users
+- Ability to friend users
+- Can invite friends to chats
+
 
 ## Technologies Used
 - Java
@@ -48,21 +58,24 @@ http://localhost:8080
 ```
 
 ## How It Works
-1. Enter your name and click **Join Chat**.
-2. Send messages that are broadcasted to all connected users.
-3. Open multiple browser tabs to simulate different users.
+1. The user is prompted to either **Host** or **Join** a chatroom.
+   - If **Hosting**, a random 5-character chatroom code is generated.
+   - If **Joining**, the user enters the chatroom code.
+2. Enter a username and click **Join Chat**.
+3. Send messages that are broadcasted to all connected users in the chatroom.
+4. Open multiple browser tabs to simulate different users.
 
 ## WebSocket Endpoints
 - **/ws** → WebSocket connection endpoint
-- **/app/chat.sendMessage** → Send chat messages
-- **/app/chat.addUser** → Notify when a user joins
-- **/topic/public** → Receives broadcasted messages
+- **/app/chat.sendMessage/{roomCode}** → Send chat messages to a specific chatroom
+- **/app/chat.addUser/{roomCode}** → Notify when a user joins a specific chatroom
+- **/topic/{roomCode}** → Receives broadcasted messages for a specific chatroom
 
 ## Next Steps
+- Implement message persistence in a database
 - Add private messaging
-- Store messages in a database
+- Improve UI design
 - Implement authentication and user management
 
 ## License
 This project is open-source and available under the [MIT License](LICENSE).
-

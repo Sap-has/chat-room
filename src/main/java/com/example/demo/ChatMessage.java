@@ -3,6 +3,7 @@ package com.example.demo;
 public class ChatMessage {
     private String sender;
     private String content;
+    private String roomCode;
     private MessageType type;
     
     public enum MessageType {
@@ -23,6 +24,12 @@ public class ChatMessage {
     }
     public void setContent(String content) {
         this.content = content;
+    }
+    public String getRoomCode() {
+        return roomCode;
+    }
+    public void setRoomCode(String roomCode) {
+        this.roomCode = roomCode;
     }
     public MessageType getType() {
         return type;
