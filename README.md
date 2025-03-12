@@ -16,7 +16,6 @@ This is a real-time chat application built using **Java**, **Spring Boot**, and 
 - Implement message persistence in a database (MySQL)
 - Ability to create users
 - Implement authentication and user management
-
 - Ability to friend users
 - Can invite friends to chats
 - Improve UI design
