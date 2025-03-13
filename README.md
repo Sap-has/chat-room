@@ -30,7 +30,7 @@ This is a real-time chat application built using **Java**, **Spring Boot**, and 
 
 ## Prerequisites
 Make sure you have the following installed:
-- Java 11 or later
+- Java 21 or later
 - Maven (for dependency management)
 - A web browser (for testing the chat interface)
 

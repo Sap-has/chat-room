@@ -66,6 +66,14 @@
     let stompClient = null;
     let currentRoom = null;
 
+    // Sanitize user input to prevent XSS attacks
+    // escape HTML in messages
+    function sanitizeInput(input) {
+      const div = document.createElement("div");
+      div.innerText = input;
+      return div.innerHTML;
+    }
+
     // Toggle display of the join room form
     function toggleJoinForm() {
       const joinForm = document.getElementById('join-room-form');
@@ -134,7 +142,8 @@
 
     // Send a chat message to the server
     function sendMessage() {
-      const messageContent = document.getElementById('message').value.trim();
+      // Sanitize the message content
+      const messageContent = sanitizeInput(document.getElementById('message').value.trim());
       const username = document.getElementById('username').value.trim();
       if (messageContent && stompClient) {
         const chatMessage = {
