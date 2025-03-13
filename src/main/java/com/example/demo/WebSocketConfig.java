@@ -21,6 +21,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Registers the WebSocket endpoint that clients will use to connect to your server.
-        registry.addEndpoint("/ws").withSockJS();
+        registry.addEndpoint("/ws")
+                .setAllowedOrigins("http://localhost:8080", "https://chatty-buddies.onrender.com/") // Allow all origins, adjust as needed for security
+                .withSockJS();
     }
 }

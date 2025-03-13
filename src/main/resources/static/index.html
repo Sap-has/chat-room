@@ -137,6 +137,9 @@
           type: 'JOIN',
           roomCode: currentRoom
         }));
+      }, function(error) {
+        console.error('STOMP error: ' + error);
+        alert('Could not connect to WebSocket server. Please refresh the page and try again.');
       });
     }
 
