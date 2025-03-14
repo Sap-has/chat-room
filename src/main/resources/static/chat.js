@@ -136,7 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   
   const displayError = (msg) => {
-    // Assume you have an error message div in your HTML
     const errorDiv = document.getElementById('error-message');
     if (errorDiv) {
       errorDiv.innerText = msg;
