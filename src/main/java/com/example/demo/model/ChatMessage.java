@@ -1,28 +1,40 @@
 package com.example.demo.model;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
+@Entity
 public class ChatMessage {
-    @NotEmpty(message = "Sender cannot be empty")
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
     private String sender;
 
-    @NotEmpty(message = "Content cannot be empty")
+    @Column(nullable = false, length = 1000)
     private String content;
 
-    @NotEmpty(message = "Room code cannot be empty")
+    @Column(nullable = false)
     private String roomCode;
 
-    @NotNull(message = "Message type cannot be null")
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private MessageType type;
 
     public enum MessageType {
-        CHAT,
-        JOIN,
-        LEAVE
+        CHAT, JOIN, LEAVE
     }
 
     // Getters and setters
+    public Long getId() {
+        return id;
+    }
+
     public String getSender() {
         return sender;
     }
@@ -41,20 +53,16 @@ public class ChatMessage {
     public void setRoomCode(String roomCode) {
         this.roomCode = roomCode;
     }
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
     public MessageType getType() {
         return type;
     }
     public void setType(MessageType type) {
         this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return "ChatMessage{" +
-                "sender='" + sender + '\'' +
-                ", content='" + content + '\'' +
-                ", roomCode='" + roomCode + '\'' +
-                ", type=" + type +
-                '}';
     }
 }
