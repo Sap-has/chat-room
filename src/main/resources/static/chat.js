@@ -35,17 +35,17 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     try {
-    const response = await fetch('/api/roomcode');
-    if (!response.ok) {
-      throw new Error('Failed to fetch room code.');
+      const response = await fetch('/api/roomcode');
+      if (!response.ok) {
+        throw new Error('Failed to fetch room code.');
+      }
+      const code = await response.text();
+      currentRoom = code;
+      document.getElementById('room-id').innerText = currentRoom;
+      initializeChat(username);
+    } catch (error) {
+      displayError('Error generating room code: ' + error.message);
     }
-    const code = await response.text();
-    currentRoom = code;
-    document.getElementById('room-id').innerText = currentRoom;
-    initializeChat(username);
-  } catch (error) {
-    displayError('Error generating room code: ' + error.message);
-  }
   };
   
   const joinRoom = () => {
