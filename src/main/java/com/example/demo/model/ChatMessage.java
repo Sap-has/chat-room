@@ -1,6 +1,8 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,18 +12,23 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotEmpty
     @Column(nullable = false)
     private String sender;
 
+    @NotEmpty
     @Column(nullable = false, length = 1000)
     private String content;
 
+    @NotEmpty
     @Column(nullable = false)
     private String roomCode;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MessageType type;

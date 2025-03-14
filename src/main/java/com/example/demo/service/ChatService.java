@@ -5,6 +5,7 @@ import com.example.demo.repository.ChatMessageRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ChatService {
@@ -15,6 +16,7 @@ public class ChatService {
         this.chatMessageRepository = chatMessageRepository;
     }
 
+    @Transactional
     public ChatMessage saveMessage(ChatMessage chatMessage) {
         chatMessage.setTimestamp(LocalDateTime.now());
         return chatMessageRepository.save(chatMessage);
