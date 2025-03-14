@@ -28,24 +28,24 @@ document.addEventListener("DOMContentLoaded", () => {
     joinForm.classList.toggle('hidden');
   };
   
-  const generateRandomCode = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
-    for (let i = 0; i < 5; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-  };
-  
-  const hostRoom = () => {
+  const hostRoom = async () => {
     const username = document.getElementById('username').value.trim();
     if (!username) {
       displayError('Please enter your name.');
       return;
     }
-    currentRoom = generateRandomCode();
+    try {
+    const response = await fetch('/api/roomcode');
+    if (!response.ok) {
+      throw new Error('Failed to fetch room code.');
+    }
+    const code = await response.text();
+    currentRoom = code;
     document.getElementById('room-id').innerText = currentRoom;
     initializeChat(username);
+  } catch (error) {
+    displayError('Error generating room code: ' + error.message);
+  }
   };
   
   const joinRoom = () => {
