@@ -24,20 +24,22 @@
             <input type="text" id="username" placeholder="Enter your name" class="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
           <div class="flex space-x-4">
-            <button onclick="hostRoom()" class="w-1/2 bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600">
+            <button id="hostRoomButton" class="w-1/2 bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600">
               Host a Room
             </button>
-            <button onclick="toggleJoinForm()" class="w-1/2 bg-green-500 text-white p-3 rounded-md hover:bg-green-600">
+            <button id="toggleJoinButton" class="w-1/2 bg-green-500 text-white p-3 rounded-md hover:bg-green-600">
               Join a Room
             </button>
           </div>
           <div id="join-room-form" class="hidden">
             <label for="roomCodeInput" class="block text-gray-700 dark:text-gray-300 mt-4">Room Code</label>
             <input type="text" id="roomCodeInput" placeholder="Enter Room Code" class="w-full p-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <button onclick="joinRoom()" class="mt-2 w-full bg-green-500 text-white p-3 rounded-md hover:bg-green-600">
+            <button id="joinRoomButton" class="mt-2 w-full bg-green-500 text-white p-3 rounded-md hover:bg-green-600">
               Join Room
             </button>
           </div>
+          <!-- Error message container -->
+          <div id="error-message" class="hidden text-red-600 mt-2"></div>
         </div>
       </div>
 
@@ -47,145 +49,20 @@
           <div class="text-lg font-semibold text-gray-800 dark:text-gray-200">
             Room: <span id="room-id" class="font-mono"></span>
           </div>
-          <button onclick="copyRoomCode()" class="text-sm text-blue-500 hover:underline">
+          <button id="copyRoomCodeButton" class="text-sm text-blue-500 hover:underline">
             Copy Room Code
           </button>
         </div>
         <div id="conversation" class="border border-gray-300 dark:border-gray-600 rounded-md p-4 h-80 overflow-y-auto bg-gray-50 dark:bg-gray-700"></div>
         <div class="mt-4 flex">
           <input type="text" id="message" placeholder="Type your message..." class="flex-1 p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <button onclick="sendMessage()" class="bg-blue-500 text-white p-2 rounded-r-md hover:bg-blue-600">
+          <button id="sendMessageButton" class="bg-blue-500 text-white p-2 rounded-r-md hover:bg-blue-600">
             Send
           </button>
         </div>
       </div>
     </div>
   </div>
-
-  <script>
-    let stompClient = null;
-    let currentRoom = null;
-
-    // Sanitize user input to prevent XSS attacks
-    // escape HTML in messages
-    function sanitizeInput(input) {
-      const div = document.createElement("div");
-      div.innerText = input;
-      return div.innerHTML;
-    }
-
-    // Toggle display of the join room form
-    function toggleJoinForm() {
-      const joinForm = document.getElementById('join-room-form');
-      joinForm.classList.toggle('hidden');
-    }
-
-    // Generate a random 5-character room code and start hosting the room
-    function hostRoom() {
-      const username = document.getElementById('username').value.trim();
-      if (!username) {
-        alert('Please enter your name.');
-        return;
-      }
-      currentRoom = generateRandomCode();
-      document.getElementById('room-id').innerText = currentRoom;
-      initializeChat(username);
-    }
-
-    // Join an existing room by room code input
-    function joinRoom() {
-      const username = document.getElementById('username').value.trim();
-      if (!username) {
-        alert('Please enter your name.');
-        return;
-      }
-      const roomCode = document.getElementById('roomCodeInput').value.trim().toUpperCase();
-      if (!roomCode) {
-        alert('Please enter a valid room code.');
-        return;
-      }
-      currentRoom = roomCode;
-      document.getElementById('room-id').innerText = currentRoom;
-      initializeChat(username);
-    }
-
-    // Generate a random 5-character code
-    function generateRandomCode() {
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let code = '';
-      for (let i = 0; i < 5; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return code;
-    }
-
-    // Initialize the WebSocket connection and update the UI
-    function initializeChat(username) {
-      document.getElementById('room-selection').classList.add('hidden');
-      document.getElementById('chat-room').classList.remove('hidden');
-
-      const socket = new SockJS('/ws');
-      stompClient = Stomp.over(socket);
-      stompClient.connect({}, function(frame) {
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/' + currentRoom, function(messageOutput) {
-          displayMessage(JSON.parse(messageOutput.body));
-        });
-        // Notify the server that a new user has joined
-        stompClient.send('/app/chat.addUser/' + currentRoom, {}, JSON.stringify({
-          sender: username,
-          type: 'JOIN',
-          roomCode: currentRoom
-        }));
-      }, function(error) {
-        console.error('STOMP error: ' + error);
-        alert('Could not connect to WebSocket server. Please refresh the page and try again.');
-      });
-    }
-
-    // Send a chat message to the server
-    function sendMessage() {
-      // Sanitize the message content
-      const messageContent = sanitizeInput(document.getElementById('message').value.trim());
-      const username = document.getElementById('username').value.trim();
-      if (messageContent && stompClient) {
-        const chatMessage = {
-          sender: username,
-          content: messageContent,
-          type: 'CHAT',
-          roomCode: currentRoom
-        };
-        stompClient.send('/app/chat.sendMessage/' + currentRoom, {}, JSON.stringify(chatMessage));
-        document.getElementById('message').value = '';
-      }
-    }
-
-    // Display a new message in the chat conversation area
-    function displayMessage(message) {
-      const conversation = document.getElementById('conversation');
-      const messageElement = document.createElement('div');
-      messageElement.classList.add('mb-2', 'p-2', 'rounded-md', 'max-w-xs', 'shadow');
-
-      if (message.type === 'JOIN') {
-        messageElement.classList.add('bg-green-100', 'text-green-800');
-        messageElement.innerText = message.sender + ' joined the room.';
-      } else if (message.type === 'LEAVE') {
-        messageElement.classList.add('bg-red-100', 'text-red-800');
-        messageElement.innerText = message.sender + ' left the room.';
-      } else {
-        messageElement.classList.add('bg-blue-100', 'text-blue-800');
-        messageElement.innerText = message.sender + ': ' + message.content;
-      }
-      conversation.appendChild(messageElement);
-      conversation.scrollTop = conversation.scrollHeight;
-    }
-
-    // Copy the room code to clipboard
-    function copyRoomCode() {
-      const code = document.getElementById('room-id').innerText;
-      navigator.clipboard.writeText(code);
-      alert('Room Code copied: ' + code);
-    }
-  </script>
+  <script src="chat.js"></script>
 </body>
 </html>
